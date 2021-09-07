@@ -19,12 +19,14 @@ def set_initial_state():
     param:
         The MCP list
         Number of items to move
+        Tasks list
 
     Moves N tasks to a different core randomly
 
     return:
         The updated list of values
 """
+
 def move():
     pass
 
@@ -41,6 +43,19 @@ def move():
 """
 def swap():
     pass
+
+
+"""
+    param:
+        MPC list (main list)
+        
+    Creates final XML file (SOLUTION)
+    
+    return:
+        xml file with solution
+"""
+def parse_solution():
+
 
 
 def parser():
@@ -79,8 +94,6 @@ def parser():
             "Period": task.get("Period"),
             "WCET": task.get("WCET")
         })
-
-
 
 
     print(mcps[0])
