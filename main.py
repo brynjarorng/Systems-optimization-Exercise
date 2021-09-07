@@ -1,6 +1,48 @@
 
 from bs4 import BeautifulSoup
 
+
+"""
+    param:
+        The MCP list (main list)
+
+    Sets a random initial state
+
+    return:
+        Updated list of values
+"""
+def set_initial_state():
+    pass
+
+
+"""
+    param:
+        The MCP list
+        Number of items to move
+
+    Moves N tasks to a different core randomly
+
+    return:
+        The updated list of values
+"""
+def move():
+    pass
+
+
+"""
+    param:
+        Number of tasks to swap
+        The MCP list (main list containing everything)
+    
+    Swaps tasks randomly
+
+    return:
+        New list with swapped values
+"""
+def swap():
+    pass
+
+
 def parser():
     with open('test_cases/small.xml', 'r') as f:
         data = f.read()
