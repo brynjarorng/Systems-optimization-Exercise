@@ -55,7 +55,7 @@ def swap():
         xml file with solution
 """
 def parse_solution():
-
+    pass
 
 
 def parser():
