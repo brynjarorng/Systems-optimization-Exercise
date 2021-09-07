@@ -34,8 +34,40 @@ def parser():
     
     Bs_data = BeautifulSoup(data, "xml")
 
-    platorm = Platform(Bs_data)
-    print(platorm.MCPs[1])
+    # Parse the platform data
+    # platorm = Platform(Bs_data)
+    mcps = []
+    mcp_list = Bs_data.find_all("MCP")
+    for mcp in mcp_list:
+        cores = []
+
+        for core in mcp.get("Cores"):
+            cores.append({
+                "Id": core.get("Id"),
+                "WCETFactor": core.get("WCETFactor")
+            })
+
+        mcps.append({
+            "Id": mcp.get("Id"),
+            "Cores": cores
+        })
+
+    
+    # Parse the task list
+    tasks = []
+    task_list = Bs_data.find_all("Task")
+    for task in task_list:
+        tasks.append({
+            "Deadline": task.get("Deadline"),
+            "Id": task.get("Id"),
+            "Period": task.get("Period"),
+            "WCET": task.get("WCET")
+        })
+
+
+
+
+    print(mcp_list)
 
            
 
