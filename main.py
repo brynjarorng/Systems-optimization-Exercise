@@ -1,19 +1,44 @@
 
 from bs4 import BeautifulSoup
- 
-with open('dict.xml', 'r') as f:
-    data = f.read()
- 
-Bs_data = BeautifulSoup(data, "xml")
 
-b_unique = Bs_data.find_all('unique')
+class Platform:
+    MCPs = []
+
+    def __init__(self, data):
+        mcps = data.find_all("MCP")
+
+        for i in mcps:
+            self.MCPs.append(MCP(i))
+
+class MCP:
+    MCP_ID = -1
+    CORES = []
+
+    def __init__(self, data):
+        self.MCP_ID = data.get("Id")
+        cores = data.find_all("Core")
+        for i in cores:
+            self.CORES.append({
+                "WCETFactor": i.get("WCETFactor"),
+                "Id": i.get("Id"),
+            })
+
+    def __str__(self):
+        return self.MCP_ID
+
  
-print(b_unique)
- 
-b_name = Bs_data.find('child', {'name':'Frank'})
- 
-print(b_name)
- 
-value = b_name.get('test')
- 
-print(value)
+
+def parser():
+    with open('test_cases/small.xml', 'r') as f:
+        data = f.read()
+    
+    Bs_data = BeautifulSoup(data, "xml")
+
+    platorm = Platform(Bs_data)
+    print(platorm.MCPs[1])
+
+           
+
+
+if __name__ == "__main__":
+    parser()
