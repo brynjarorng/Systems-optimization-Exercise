@@ -17,7 +17,8 @@ def parser():
         for core in mcp.find_all("Core"):
             cores.append({
                 "Id": core.get("Id"),
-                "WCETFactor": core.get("WCETFactor")
+                "WCETFactor": core.get("WCETFactor"),
+                "TaskList": []
             })
 
         mcps.append({
