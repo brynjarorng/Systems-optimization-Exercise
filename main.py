@@ -1,25 +1,42 @@
 
 from bs4 import BeautifulSoup
+import random
 
 
 """
     param:
         The MCP list (main list)
+        Tasks list
 
     Sets a random initial state
 
     return:
         Updated list of values
 """
-def set_initial_state():
-    pass
+def set_initial_state(mcps, tasks):
+    number_of_mcps = len(mcps)
+    number_of_cores = []
+    for mcp in mcps:
+        number_of_cores.append(len(mcp['Cores']))
+
+    for t in tasks:
+        random_mcp = random.randint(0, number_of_mcps - 1)
+        random_core = random.randint(0, number_of_cores[random_mcp] - 1)
+        print('MCP number ' + str(random_mcp))
+        print('Core number ' + str(random_core))
+
+        mcps[random_mcp]['Cores'][random_core]['TaskList'].append(t)
+
+    print(mcps[0])
+    print(mcps[1])
+
+    return mcps
 
 
 """
     param:
         The MCP list
         Number of items to move
-        Tasks list
 
     Moves N tasks to a different core randomly
 
@@ -95,12 +112,9 @@ def parser():
             "WCET": task.get("WCET")
         })
 
-
-    print(mcps[0])
-    print(mcps[1])
-
-           
+    return mcps, tasks
 
 
 if __name__ == "__main__":
-    parser()
+    mcps, tasks = parser()
+    initial_state = set_initial_state(mcps, tasks)
