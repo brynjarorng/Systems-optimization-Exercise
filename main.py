@@ -2,7 +2,6 @@
 from bs4 import BeautifulSoup
 import random
 
-
 """
     param:
         The MCP list (main list)
@@ -72,6 +71,18 @@ def swap():
         xml file with solution
 """
 def parse_solution():
+    pass
+
+"""
+    param:
+        MPC list(main list)
+        
+        Runs the main algorithm (Simulated Annealing) to find the best solution
+        
+        return:
+            best version of the MCP list
+"""
+def algorithm_sa():
     pass
 
 
