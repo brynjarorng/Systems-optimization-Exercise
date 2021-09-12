@@ -1,6 +1,7 @@
 
 from bs4 import BeautifulSoup
 import random
+import xml.etree.cElementTree as ET
 
 """
     param:
@@ -12,6 +13,8 @@ import random
     return:
         Updated list of values
 """
+
+
 def set_initial_state(mcps, tasks):
     number_of_mcps = len(mcps)
     number_of_cores = []
@@ -21,13 +24,13 @@ def set_initial_state(mcps, tasks):
     for t in tasks:
         random_mcp = random.randint(0, number_of_mcps - 1)
         random_core = random.randint(0, number_of_cores[random_mcp] - 1)
-        print('MCP number ' + str(random_mcp))
-        print('Core number ' + str(random_core))
+        # print('MCP number ' + str(random_mcp))
+        # print('Core number ' + str(random_core))
 
         mcps[random_mcp]['Cores'][random_core]['TaskList'].append(t)
 
-    print(mcps[0])
-    print(mcps[1])
+    # print("From initial state function: ", mcps[0])
+    # print(mcps[1])
 
     return mcps
 
@@ -43,6 +46,7 @@ def set_initial_state(mcps, tasks):
         The updated list of values
 """
 
+
 def move():
     pass
 
@@ -51,12 +55,14 @@ def move():
     param:
         Number of tasks to swap
         The MCP list (main list containing everything)
-    
+
     Swaps tasks randomly
 
     return:
         New list with swapped values
 """
+
+
 def swap():
     pass
 
@@ -64,24 +70,41 @@ def swap():
 """
     param:
         MPC list (main list)
-        
+
     Creates final XML file (SOLUTION)
-    
+
     return:
         xml file with solution
 """
-def parse_solution():
-    pass
+
+
+def parse_solution(mcps):
+    root = ET.Element("Solution")
+
+    for mcp in mcps:
+        for core in mcp['Cores']:
+            for task in core['TaskList']:
+                WCRT = str(round(float(task['WCET']) *
+                                 float(core['WCETFactor']), 2))
+
+                ET.SubElement(
+                    root, "Task", Id=task['Id'], MCP=mcp['Id'], Core=core['Id'], WCRT=WCRT)
+
+    tree = ET.ElementTree(root)
+    tree.write('filename.xml')
+
 
 """
     param:
         MPC list(main list)
-        
+
         Runs the main algorithm (Simulated Annealing) to find the best solution
-        
+
         return:
             best version of the MCP list
 """
+
+
 def algorithm_sa():
     pass
 
@@ -89,7 +112,7 @@ def algorithm_sa():
 def parser():
     with open('test_cases/small.xml', 'r') as f:
         data = f.read()
-    
+
     Bs_data = BeautifulSoup(data, "xml")
 
     # Parse the platform data
@@ -111,7 +134,6 @@ def parser():
             "Cores": cores
         })
 
-    
     # Parse the task list
     tasks = []
     task_list = Bs_data.find_all("Task")
@@ -129,3 +151,4 @@ def parser():
 if __name__ == "__main__":
     mcps, tasks = parser()
     initial_state = set_initial_state(mcps, tasks)
+    parse_solution = parse_solution(initial_state)
