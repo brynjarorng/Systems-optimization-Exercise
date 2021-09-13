@@ -53,6 +53,31 @@ def move():
 
 """
     param:
+        The MCP list
+
+    Gets a random task
+
+    return:
+        A random task
+"""
+
+
+def getTask(mcps):
+    while (True):
+        '''We run until we find a task - since there might be no cores and no tasks in some MCPs.'''
+        mcp_index = random.randrange(0, len(mcps))
+        if (len(mcps[mcp_index]['Cores']) == 0):
+            continue
+        core_index = random.randrange(0, len(mcps[mcp_index]['Cores']))
+        if (len(mcps[mcp_index]['Cores'][core_index]['TaskList']) == 0):
+            continue
+        task_index = random.randrange(
+            0, len(mcps[mcp_index]['Cores'][core_index]['TaskList']))
+        return mcp_index, core_index, task_index, mcps[mcp_index]['Cores'][core_index]['TaskList'][task_index]
+
+
+"""
+    param:
         Number of tasks to swap
         The MCP list (main list containing everything)
 
@@ -63,8 +88,13 @@ def move():
 """
 
 
-def swap():
-    pass
+def swap(swap_count, mcps):
+    for count in range(swap_count):
+        mcp1_index, core1_index, task1_index, task1 = getTask(mcps)
+        mcp2_index, core2_index, task2_index, task2 = getTask(mcps)
+        mcps[mcp1_index]['Cores'][core1_index]['TaskList'][task1_index] = task2
+        mcps[mcp2_index]['Cores'][core2_index]['TaskList'][task2_index] = task1
+    return mcps
 
 
 """
@@ -149,6 +179,8 @@ def parser():
 
 
 if __name__ == "__main__":
+    swap_count = 4
     mcps, tasks = parser()
     initial_state = set_initial_state(mcps, tasks)
-    parse_solution = parse_solution(initial_state)
+    swap_state = swap(swap_count, mcps)
+    parse_solution = parse_solution(mcps)
