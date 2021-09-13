@@ -1,5 +1,6 @@
 
 from bs4 import BeautifulSoup
+from xml.etree.ElementTree import Element, SubElement, ElementTree
 import random
 
 """
@@ -120,19 +121,38 @@ def swap():
 
 """
     param:
-        MPC list (main list)
+        MCP list (main list)
         
     Creates final XML file (SOLUTION)
     
     return:
         xml file with solution
 """
-def parse_solution():
-    pass
+def parse_solution(mcps):
+    solutionJson = {}
+    taskSize = 0
+    # Extract solution data into a Json object
+    for mcp in mcps:
+        for core in mcp["Cores"]:
+            for task in core["TaskList"]:
+                taskRes = { "MCP": mcp["Id"], "Core": core["Id"], "WCRT": task["WCRT"] } 
+                solutionJson[task["Id"]] = taskRes
+                taskSize += 1
+    
+    # Build Element tree
+    top = Element('Solution')
+    for n in range(taskSize):
+        curTaskRes = solutionJson[str(n)]
+        SubElement(top, 'Task', Id=str(n), MCP=curTaskRes["MCP"], Core=curTaskRes["Core"], WCRT=curTaskRes["WCRT"])
+    tree = ElementTree(top)
+    
+    # Write ordered element tree into xml file
+    with open ("solution.xml", "wb") as files:
+        tree.write(files)
 
 """
     param:
-        MPC list(main list)
+        MCP list(main list)
         
         Runs the main algorithm (Simulated Annealing) to find the best solution
         
