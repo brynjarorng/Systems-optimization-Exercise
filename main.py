@@ -1,6 +1,7 @@
 
 from bs4 import BeautifulSoup
 import random
+import math
 
 """
     param:
@@ -85,6 +86,32 @@ def parse_solution():
 def algorithm_sa():
     pass
 
+"""
+    param:
+        Tasks list (on a single core) ordered by unique priority 
+        and adjusted for WCETFactor of core's performance beforehand
+        
+        Determines whether a list of tasks is schedulable on a single processor
+        
+        return:
+            boolean respresenting whether assignment is schedulable
+            list of corresponding WCRTs found
+"""
+def is_schedulable(tasks):
+    wcrts = []
+    for i in range(0,len(tasks)):
+        l = 0
+        while True:
+            r = l + int(tasks[i]["WCET"])
+            if r > int(tasks[i]["Deadline"]):
+                return False, []
+            l = 0
+            for j in range(0,i):
+                l += int(math.ceil(r/int(tasks[j]["Period"]))) * int(tasks[j]["WCET"])
+            if l + int(tasks[i]["WCET"]) <= r:
+                wcrts.append(r)
+                break
+    return True, wcrts
 
 def parser():
     with open('test_cases/small.xml', 'r') as f:
@@ -129,3 +156,5 @@ def parser():
 if __name__ == "__main__":
     mcps, tasks = parser()
     initial_state = set_initial_state(mcps, tasks)
+    is_schedulable, wcrts = is_schedulable(tasks)
+    print(wcrts)
