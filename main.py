@@ -84,8 +84,8 @@ def insert_random(mcps, task):
     Moves N tasks to a different core randomly
 
     Args:
-        The MCP list
-        Number of items to move
+        mcps: The MCP list
+        num_to_move: Number of items to move
 
     Returns:
         The updated list of values
