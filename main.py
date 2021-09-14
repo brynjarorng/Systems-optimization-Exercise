@@ -6,13 +6,13 @@ import xml.etree.cElementTree as ET
 SOLUTION_FILE = 'filename.xml'
 
 """
-    param:
-        The MCP list (main list)
-        Tasks list
-
     Sets a random initial state
 
-    return:
+    Args:
+        mcps: The MCP list (main list)
+        tasks: Tasks list
+
+    Returns:
         Updated list of values
 """
 def set_initial_state(mcps, tasks):
@@ -24,60 +24,106 @@ def set_initial_state(mcps, tasks):
     for t in tasks:
         random_mcp = random.randint(0, number_of_mcps - 1)
         random_core = random.randint(0, number_of_cores[random_mcp] - 1)
-        # print('MCP number ' + str(random_mcp))
-        # print('Core number ' + str(random_core))
 
         mcps[random_mcp]['Cores'][random_core]['TaskList'].append(t)
-
-    # print("From initial state function: ", mcps[0])
-    # print(mcps[1])
 
     return mcps
 
 
 """
-    param:
+    Finds a single random task and pops it from the list
+
+    Args:
+        The MCP lsit
+
+    Returns:
+        A tuple where the first item is the new mcps list and second is the poped item
+"""
+def get_random_task(mcps):
+    number_of_mcps = len(mcps)
+
+    while True:
+        random_mcp = random.randint(0, number_of_mcps - 1)
+        num_cores = len(mcps[random_mcp]["Cores"])
+        random_core = random.randint(0, num_cores - 1)
+        num_tasks = len(mcps[random_mcp]["Cores"][random_core]["TaskList"])
+
+        if num_tasks == 0:
+            # Try again since task list is empty
+            continue
+
+        random_task = random.randint(0, num_tasks - 1)
+        selected_task_to_move = mcps[random_mcp]["Cores"][random_core]["TaskList"][random_task]
+
+        del mcps[random_mcp]["Cores"][random_core]["TaskList"][random_task]
+
+        return mcps, selected_task_to_move
+
+
+"""
+    Inserts a task randomly into the MCP list
+
+    Args:
+        mcps: The MCP list
+        task: The task to insert
+
+    Returns:
+        A new mcps list
+"""
+def insert_random(mcps, task):
+    number_of_mcps = len(mcps)
+    random_mcp = random.randint(0, number_of_mcps - 1)
+    num_cores = len(mcps[random_mcp]["Cores"])
+    random_core = random.randint(0, num_cores - 1)
+    mcps[random_mcp]["Cores"][random_core]["TaskList"].append(task)
+
+    return mcps
+
+
+"""
+    Moves N tasks to a different core randomly
+
+    Args:
         The MCP list
         Number of items to move
 
-    Moves N tasks to a different core randomly
-
-    return:
+    Returns:
         The updated list of values
 """
+def move(mcps, num_to_move):
+    for i in range(num_to_move):
+        # Select random task
+        mcps, selected_task_to_move = get_random_task(mcps)
 
-
-def move():
-    pass
+        # Insert task somewhere else
+        mcps = insert_random(mcps, selected_task_to_move)
+        
+    return mcps
 
 
 """
-    param:
+    Swaps tasks randomly
+
+    Args:
         Number of tasks to swap
         The MCP list (main list containing everything)
 
-    Swaps tasks randomly
-
-    return:
+    Returns:
         New list with swapped values
 """
-
-
 def swap():
     pass
 
 
 """
-    param:
-        MPC list (main list)
-
     Creates final XML file (SOLUTION)
 
-    return:
+    Args:
+        MPC list (main list)    
+    
+    Returns:
         xml file with solution
 """
-
-
 def parse_solution(mcps):
     root = ET.Element("Solution")
 
@@ -95,22 +141,30 @@ def parse_solution(mcps):
 
 
 """
-    param:
+    Runs the main algorithm (Simulated Annealing) to find the best solution
+    
+    Args:
         MPC list(main list)
-
-        Runs the main algorithm (Simulated Annealing) to find the best solution
-
-        return:
-            best version of the MCP list
+        
+    Returns:
+        best version of the MCP list
 """
-
-
 def algorithm_sa():
     pass
 
 
-def parser():
-    with open('test_cases/small.xml', 'r') as f:
+"""
+    Parses the input file from xml into python dicts
+
+    Args:
+        file_to_read: The input file to be read
+
+    Returns:
+        python dict representation of an input XML file. This is the list
+        of MCPs which contain cores which then contain the tasks
+"""
+def parser(file_to_read):
+    with open(file_to_read, 'r') as f:
         data = f.read()
 
     Bs_data = BeautifulSoup(data, "xml")
@@ -149,6 +203,9 @@ def parser():
 
 
 if __name__ == "__main__":
-    mcps, tasks = parser()
+    file_to_read = 'test_cases/small.xml'
+    mcps, tasks = parser(file_to_read)
     initial_state = set_initial_state(mcps, tasks)
     parse_solution = parse_solution(initial_state)
+
+
