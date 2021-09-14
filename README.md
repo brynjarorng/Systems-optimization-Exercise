@@ -3,4 +3,4 @@
 `pip3 -r requirements.txt`
 
 ##TODO functions
-### move, swap, algorithm_sa, parse_solution
+### algorithm_sa, laxity_calculator, rta_core, cost, state_comparator
