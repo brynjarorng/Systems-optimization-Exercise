@@ -2,6 +2,7 @@
 from bs4 import BeautifulSoup
 import random
 import xml.etree.cElementTree as ET
+import math
 
 SOLUTION_FILE = 'filename.xml'
 
@@ -163,6 +164,32 @@ def parse_solution(mcps):
 def algorithm_sa():
     pass
 
+"""
+    param:
+        Tasks list (on a single core) ordered by unique priority 
+        and adjusted for WCETFactor of core's performance beforehand
+        
+        Determines whether a list of tasks is schedulable on a single processor
+        
+        return:
+            boolean respresenting whether assignment is schedulable
+            list of corresponding WCRTs found
+"""
+def is_schedulable(tasks):
+    wcrts = []
+    for i in range(0,len(tasks)):
+        l = 0
+        while True:
+            r = l + tasks[i]["WCET"]
+            if r > tasks[i]["Deadline"]:
+                return False, []
+            l = 0
+            for j in range(0,i):
+                l += math.ceil(r/tasks[j]["Period"]) * tasks[j]["WCET"]
+            if l + tasks[i]["WCET"] <= r:
+                wcrts.append(r)
+                break
+    return True, wcrts
 
 """
     Parses the input file from xml into python dicts
@@ -204,10 +231,10 @@ def parser(file_to_read):
     task_list = Bs_data.find_all("Task")
     for task in task_list:
         tasks.append({
-            "Deadline": task.get("Deadline"),
+            "Deadline": int(task.get("Deadline")),
             "Id": task.get("Id"),
-            "Period": task.get("Period"),
-            "WCET": task.get("WCET")
+            "Period": int(task.get("Period")),
+            "WCET": int(task.get("WCET"))
         })
 
     return mcps, tasks
@@ -221,3 +248,5 @@ if __name__ == "__main__":
     swap_count = 4
     swap_state = swap(swap_count, mcps)
     parse_solution = parse_solution(mcps)
+    is_schedulable, wcrts = is_schedulable(tasks)
+    print(wcrts)
