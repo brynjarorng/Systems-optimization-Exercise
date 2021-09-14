@@ -3,13 +3,13 @@ from bs4 import BeautifulSoup
 import random
 
 """
-    param:
-        The MCP list (main list)
-        Tasks list
-
     Sets a random initial state
 
-    return:
+    Args:
+        mcps: The MCP list (main list)
+        tasks: Tasks list
+
+    Returns:
         Updated list of values
 """
 def set_initial_state(mcps, tasks):
@@ -33,12 +33,12 @@ def set_initial_state(mcps, tasks):
 
 
 """
-    param:
+    Finds a single random task and pops it from the list
+
+    Args:
         The MCP lsit
 
-    finds a single random task and pops it from the list
-
-    return:
+    Returns:
         A tuple where the first item is the new mcps list and second is the poped item
 """
 def get_random_task(mcps):
@@ -63,13 +63,13 @@ def get_random_task(mcps):
 
 
 """
-    param:
-        The MCP list
-        The task to insert
-
     Inserts a task randomly into the MCP list
 
-    returns:
+    Args:
+        mcps: The MCP list
+        task: The task to insert
+
+    Returns:
         A new mcps list
 """
 def insert_random(mcps, task):
@@ -83,13 +83,13 @@ def insert_random(mcps, task):
 
 
 """
-    param:
+    Moves N tasks to a different core randomly
+
+    Args:
         The MCP list
         Number of items to move
 
-    Moves N tasks to a different core randomly
-
-    return:
+    Returns:
         The updated list of values
 """
 def move(mcps, num_to_move):
@@ -105,13 +105,13 @@ def move(mcps, num_to_move):
 
 
 """
-    param:
-        Number of tasks to swap
-        The MCP list (main list containing everything)
-    
     Swaps tasks randomly
 
-    return:
+    Args:
+        Number of tasks to swap
+        The MCP list (main list containing everything)
+
+    Returns:
         New list with swapped values
 """
 def swap():
@@ -119,30 +119,40 @@ def swap():
 
 
 """
-    param:
-        MPC list (main list)
-        
     Creates final XML file (SOLUTION)
+
+    Args:
+        MPC list (main list)    
     
-    return:
+    Returns:
         xml file with solution
 """
 def parse_solution():
     pass
 
 """
-    param:
+    Runs the main algorithm (Simulated Annealing) to find the best solution
+    
+    Args:
         MPC list(main list)
         
-        Runs the main algorithm (Simulated Annealing) to find the best solution
-        
-        return:
-            best version of the MCP list
+    Returns:
+        best version of the MCP list
 """
 def algorithm_sa():
     pass
 
 
+"""
+    Parses the input file from xml into python dicts
+
+    Args:
+        file_to_read: The input file to be read
+
+    Returns:
+        python dict representation of an input XML file. This is the list
+        of MCPs which contain cores which then contain the tasks
+"""
 def parser():
     with open('test_cases/small.xml', 'r') as f:
         data = f.read()
