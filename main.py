@@ -64,7 +64,8 @@ def move():
 
 def getTask(mcps):
     while (True):
-        '''We run until we find a task - since there might be no cores and no tasks in some MCPs.'''
+        # We run until we find a task - since there might be no cores and no tasks in some MCPs.
+        # MCPs should always have cores, and there should always be tasks, but better safe than sorry
         mcp_index = random.randrange(0, len(mcps))
         if (len(mcps[mcp_index]['Cores']) == 0):
             continue
@@ -89,12 +90,16 @@ def getTask(mcps):
 
 
 def swap(swap_count, mcps):
-    for count in range(swap_count):
-        mcp1_index, core1_index, task1_index, task1 = getTask(mcps)
-        mcp2_index, core2_index, task2_index, task2 = getTask(mcps)
-        mcps[mcp1_index]['Cores'][core1_index]['TaskList'][task1_index] = task2
-        mcps[mcp2_index]['Cores'][core2_index]['TaskList'][task2_index] = task1
-    return mcps
+    swaps = 0;
+    while (swaps < swap_count):
+        mcp1_index, core1_index, task1_index, task1 = getTask(mcps);
+        mcp2_index, core2_index, task2_index, task2 = getTask(mcps);
+        # Only do swaps if the two task are different
+        if (task1 != task2):
+            mcps[mcp1_index]['Cores'][core1_index]['TaskList'][task1_index] = task2;
+            mcps[mcp2_index]['Cores'][core2_index]['TaskList'][task2_index] = task1;
+            swaps += 1;
+    return mcps;
 
 
 """
