@@ -102,13 +102,13 @@ def is_schedulable(tasks):
     for i in range(0,len(tasks)):
         l = 0
         while True:
-            r = l + int(tasks[i]["WCET"])
-            if r > int(tasks[i]["Deadline"]):
+            r = l + tasks[i]["WCET"]
+            if r > tasks[i]["Deadline"]:
                 return False, []
             l = 0
             for j in range(0,i):
-                l += int(math.ceil(r/int(tasks[j]["Period"]))) * int(tasks[j]["WCET"])
-            if l + int(tasks[i]["WCET"]) <= r:
+                l += math.ceil(r/tasks[j]["Period"]) * tasks[j]["WCET"]
+            if l + tasks[i]["WCET"] <= r:
                 wcrts.append(r)
                 break
     return True, wcrts
@@ -144,10 +144,10 @@ def parser():
     task_list = Bs_data.find_all("Task")
     for task in task_list:
         tasks.append({
-            "Deadline": task.get("Deadline"),
+            "Deadline": int(task.get("Deadline")),
             "Id": task.get("Id"),
-            "Period": task.get("Period"),
-            "WCET": task.get("WCET")
+            "Period": int(task.get("Period")),
+            "WCET": int(task.get("WCET"))
         })
 
     return mcps, tasks
