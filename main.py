@@ -1,6 +1,9 @@
 
 from bs4 import BeautifulSoup
 import random
+import xml.etree.cElementTree as ET
+
+SOLUTION_FILE = 'filename.xml'
 
 """
     Sets a random initial state
@@ -21,13 +24,8 @@ def set_initial_state(mcps, tasks):
     for t in tasks:
         random_mcp = random.randint(0, number_of_mcps - 1)
         random_core = random.randint(0, number_of_cores[random_mcp] - 1)
-        # print('MCP number ' + str(random_mcp))
-        # print('Core number ' + str(random_core))
 
         mcps[random_mcp]['Cores'][random_core]['TaskList'].append(t)
-
-    # print(mcps[0])
-    # print(mcps[1])
 
     return mcps
 
@@ -103,7 +101,6 @@ def move(mcps, num_to_move):
     return mcps
 
 
-
 """
     Swaps tasks randomly
 
@@ -127,8 +124,21 @@ def swap():
     Returns:
         xml file with solution
 """
-def parse_solution():
-    pass
+def parse_solution(mcps):
+    root = ET.Element("Solution")
+
+    for mcp in mcps:
+        for core in mcp['Cores']:
+            for task in core['TaskList']:
+                WCRT = str(round(float(task['WCET']) *
+                                 float(core['WCETFactor']), 2))
+
+                ET.SubElement(
+                    root, "Task", Id=task['Id'], MCP=mcp['Id'], Core=core['Id'], WCRT=WCRT)
+
+    tree = ET.ElementTree(root)
+    tree.write(SOLUTION_FILE)
+
 
 """
     Runs the main algorithm (Simulated Annealing) to find the best solution
@@ -156,7 +166,7 @@ def algorithm_sa():
 def parser(file_to_read):
     with open(file_to_read, 'r') as f:
         data = f.read()
-    
+
     Bs_data = BeautifulSoup(data, "xml")
 
     # Parse the platform data
@@ -178,7 +188,6 @@ def parser(file_to_read):
             "Cores": cores
         })
 
-    
     # Parse the task list
     tasks = []
     task_list = Bs_data.find_all("Task")
@@ -197,4 +206,6 @@ if __name__ == "__main__":
     file_to_read = 'test_cases/small.xml'
     mcps, tasks = parser(file_to_read)
     initial_state = set_initial_state(mcps, tasks)
+    parse_solution = parse_solution(initial_state)
+
 
