@@ -31,33 +31,34 @@ def set_initial_state(mcps, tasks):
 
 
 """
-    Finds a single random task and pops it from the list
+    Gets a random task
 
     Args:
-        The MCP lsit
+        mcps: The MCP list
 
     Returns:
-        A tuple where the first item is the new mcps list and second is the poped item
+        mcp_index: the index of the mcp
+        core_index: the index of the core in an mcp
+        task_index: the index of the task in a core
+        task: the selected random task
+
 """
 def get_random_task(mcps):
-    number_of_mcps = len(mcps)
-
     while True:
-        random_mcp = random.randint(0, number_of_mcps - 1)
-        num_cores = len(mcps[random_mcp]["Cores"])
-        random_core = random.randint(0, num_cores - 1)
-        num_tasks = len(mcps[random_mcp]["Cores"][random_core]["TaskList"])
-
-        if num_tasks == 0:
-            # Try again since task list is empty
+        # We run until we find a task - since there might be no cores and no tasks in some MCPs.
+        # MCPs should always have cores, and there should always be tasks, but better safe than sorry
+        mcp_index = random.randrange(0, len(mcps))
+        if len(mcps[mcp_index]['Cores']) == 0:
             continue
 
-        random_task = random.randint(0, num_tasks - 1)
-        selected_task_to_move = mcps[random_mcp]["Cores"][random_core]["TaskList"][random_task]
+        core_index = random.randrange(0, len(mcps[mcp_index]['Cores']))
+        if len(mcps[mcp_index]['Cores'][core_index]['TaskList']) == 0:
+            continue
 
-        del mcps[random_mcp]["Cores"][random_core]["TaskList"][random_task]
+        task_index = random.randrange(
+            0, len(mcps[mcp_index]['Cores'][core_index]['TaskList']))
 
-        return mcps, selected_task_to_move
+        return mcp_index, core_index, task_index, mcps[mcp_index]['Cores'][core_index]['TaskList'][task_index]
 
 
 """
@@ -92,11 +93,12 @@ def insert_random(mcps, task):
 """
 def move(mcps, num_to_move):
     for i in range(num_to_move):
-        # Select random task
-        mcps, selected_task_to_move = get_random_task(mcps)
+        # Select random task and remove it
+        mcp_index, core_index, task_index, task = get_random_task(mcps);
+        del mcps[mcp_index]['Cores'][core_index]['TaskList'][task_index]
 
         # Insert task somewhere else
-        mcps = insert_random(mcps, selected_task_to_move)
+        mcps = insert_random(mcps, task)
         
     return mcps
 
@@ -111,8 +113,17 @@ def move(mcps, num_to_move):
     Returns:
         New list with swapped values
 """
-def swap():
-    pass
+def swap(swap_count, mcps):
+    swaps = 0;
+    while (swaps < swap_count):
+        mcp1_index, core1_index, task1_index, task1 = get_random_task(mcps);
+        mcp2_index, core2_index, task2_index, task2 = get_random_task(mcps);
+        # Only do swaps if the two task are different
+        if (task1 != task2):
+            mcps[mcp1_index]['Cores'][core1_index]['TaskList'][task1_index] = task2;
+            mcps[mcp2_index]['Cores'][core2_index]['TaskList'][task2_index] = task1;
+            swaps += 1;
+    return mcps;
 
 
 """
@@ -206,6 +217,7 @@ if __name__ == "__main__":
     file_to_read = 'test_cases/small.xml'
     mcps, tasks = parser(file_to_read)
     initial_state = set_initial_state(mcps, tasks)
-    parse_solution = parse_solution(initial_state)
 
-
+    swap_count = 4
+    swap_state = swap(swap_count, mcps)
+    parse_solution = parse_solution(mcps)
