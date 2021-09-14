@@ -153,8 +153,8 @@ def algorithm_sa():
         python dict representation of an input XML file. This is the list
         of MCPs which contain cores which then contain the tasks
 """
-def parser():
-    with open('test_cases/small.xml', 'r') as f:
+def parser(file_to_read):
+    with open(file_to_read, 'r') as f:
         data = f.read()
     
     Bs_data = BeautifulSoup(data, "xml")
@@ -194,6 +194,7 @@ def parser():
 
 
 if __name__ == "__main__":
-    mcps, tasks = parser()
+    file_to_read = 'test_cases/small.xml'
+    mcps, tasks = parser(file_to_read)
     initial_state = set_initial_state(mcps, tasks)
 
