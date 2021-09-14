@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 import random
 import xml.etree.cElementTree as ET
 
+SOLUTION_FILE = 'filename.xml'
+
 """
     param:
         The MCP list (main list)
@@ -13,8 +15,6 @@ import xml.etree.cElementTree as ET
     return:
         Updated list of values
 """
-
-
 def set_initial_state(mcps, tasks):
     number_of_mcps = len(mcps)
     number_of_cores = []
@@ -91,7 +91,7 @@ def parse_solution(mcps):
                     root, "Task", Id=task['Id'], MCP=mcp['Id'], Core=core['Id'], WCRT=WCRT)
 
     tree = ET.ElementTree(root)
-    tree.write('filename.xml')
+    tree.write(SOLUTION_FILE)
 
 
 """
