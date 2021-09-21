@@ -164,16 +164,17 @@ def parse_solution(mcps):
 def algorithm_sa():
     pass
 
+
 """
-    param:
+    Determines whether a list of tasks is schedulable on a single processor
+
+    Args:
         Tasks list (on a single core) ordered by unique priority 
         and adjusted for WCETFactor of core's performance beforehand
         
-        Determines whether a list of tasks is schedulable on a single processor
-        
-        return:
-            boolean respresenting whether assignment is schedulable
-            list of corresponding WCRTs found
+    Returns:
+        boolean respresenting whether assignment is schedulable
+        list of corresponding WCRTs found
 """
 def is_schedulable(tasks):
     wcrts = []
@@ -189,7 +190,9 @@ def is_schedulable(tasks):
             if l + tasks[i]["WCET"] <= r:
                 wcrts.append(r)
                 break
+    
     return True, wcrts
+
 
 """
     Parses the input file from xml into python dicts
