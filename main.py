@@ -131,7 +131,7 @@ def swap(swap_count, mcps):
     Creates final XML file (SOLUTION)
 
     Args:
-        MPC list (main list)    
+        mcps: MPC list (main list)    
     
     Returns:
         xml file with solution
@@ -195,6 +195,33 @@ def is_schedulable(tasks):
 
 
 """
+    Calculate the laxity
+
+    Args:
+        mcps: main list
+
+    Returns:
+        Laxity value
+"""
+def laxity_calculator(mcps, tasks):
+    laxity, r = 0, 0
+    deadlines = sum(task['Deadline'] for task in tasks)
+    for mcp in mcps:
+        for core in mcp['Cores']:
+            tasks = core['TaskList']
+            bool, wcrts = is_schedulable(tasks)
+            for w in wcrts:
+                r = r + w
+
+    laxity = deadlines - r
+
+    print('Laxity: ' + str(laxity))
+
+    return laxity
+
+
+
+"""
     Parses the input file from xml into python dicts
 
     Args:
@@ -250,6 +277,9 @@ if __name__ == "__main__":
 
     swap_count = 4
     swap_state = swap(swap_count, mcps)
+
+    laxity_calculator(mcps,tasks)
+
     parse_solution = parse_solution(mcps)
     is_schedulable, wcrts = is_schedulable(tasks)
     print(wcrts)
