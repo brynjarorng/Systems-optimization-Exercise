@@ -92,7 +92,7 @@ def insert_random(mcps, task):
     Returns:
         The updated list of values
 """
-def move(mcps, num_to_move):
+def move(num_to_move, mcps):
     for i in range(num_to_move):
         # Select random task and remove it
         mcp_index, core_index, task_index, task = get_random_task(mcps);
@@ -176,18 +176,18 @@ def algorithm_sa():
         boolean respresenting whether assignment is schedulable
         list of corresponding WCRTs found
 """
-def is_schedulable(tasks):
+def is_schedulable(tasks, core_factor):
     wcrts = []
     for i in range(0,len(tasks)):
         l = 0
         while True:
-            r = l + tasks[i]["WCET"]
+            r = l + tasks[i]["WCET"] * core_factor
             if r > tasks[i]["Deadline"]:
                 return False, []
             l = 0
             for j in range(0,i):
-                l += math.ceil(r/tasks[j]["Period"]) * tasks[j]["WCET"]
-            if l + tasks[i]["WCET"] <= r:
+                l += math.ceil(r/tasks[j]["Period"]) * tasks[j]["WCET"] * core_factor
+            if l + tasks[i]["WCET"] * core_factor <= r:
                 wcrts.append(r)
                 break
     
@@ -203,22 +203,22 @@ def is_schedulable(tasks):
     Returns:
         Laxity value
 """
-def laxity_calculator(mcps, tasks):
+def laxity_calculator(mcps):
     laxity, r = 0, 0
-    deadlines = sum(task['Deadline'] for task in tasks)
+    deadlines = 0
+    #sum(task['Deadline'] for task in tasks)
     for mcp in mcps:
         for core in mcp['Cores']:
             tasks = core['TaskList']
-            bool, wcrts = is_schedulable(tasks)
+            for task in tasks:
+                deadlines += task['Deadline']
+            bool, wcrts = is_schedulable(tasks, core["WCETFactor"])
             for w in wcrts:
                 r = r + w
 
     laxity = deadlines - r
 
-    print('Laxity: ' + str(laxity))
-
-    return laxity
-
+    return laxity, deadlines
 
 
 """
@@ -247,7 +247,7 @@ def parser(file_to_read):
         for core in mcp.find_all("Core"):
             cores.append({
                 "Id": core.get("Id"),
-                "WCETFactor": core.get("WCETFactor"),
+                "WCETFactor": float(core.get("WCETFactor")),
                 "TaskList": []
             })
 
@@ -269,17 +269,52 @@ def parser(file_to_read):
 
     return mcps, tasks
 
+"""
+    The simple annealing function 
+"""
+def sa(mcps):
+    swapper = [True, False]
+    T_max = 10000000
+    T = T_max
+    r = 0.003
+    laxity, _ = laxity_calculator(mcps)
+    state_list = []
+
+    while T > 1:
+        # Generate neighbour using either swap or move
+        change_ammount = random.randrange(1, 6)
+        if random.choice(swapper):
+            mcps_new = swap(change_ammount, mcps)
+        else:
+            mcps_new = move(change_ammount, mcps)
+
+        new_laxity, _ = laxity_calculator(mcps_new)
+
+        if laxity > new_laxity or random.randrange(0, T_max) < T:
+            # Set new state
+            mcps = mcps_new
+
+            state_list.append(laxity)
+
+            # if is_solution(new_state):
+            #     # Insert new state into a list of valid solutions
+            #     state_list.append(new_state)
+        
+        T = T * (1 - r)
+
+    return state_list, mcps
+
+
 
 if __name__ == "__main__":
     file_to_read = 'test_cases/small.xml'
     mcps, tasks = parser(file_to_read)
     initial_state = set_initial_state(mcps, tasks)
 
-    swap_count = 4
-    swap_state = swap(swap_count, mcps)
+    results, mcps = sa(mcps) 
 
-    laxity_calculator(mcps,tasks)
+    print(mcps)
+    print(results)
 
-    parse_solution = parse_solution(mcps)
-    is_schedulable, wcrts = is_schedulable(tasks)
-    print(wcrts)
+
+    # parse_solution = parse_solution(mcps)
