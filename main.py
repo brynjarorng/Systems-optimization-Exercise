@@ -5,6 +5,8 @@ import xml.etree.cElementTree as ET
 import math
 
 SOLUTION_FILE = 'filename.xml'
+GLOBAL_OPTIMUM_SOLUTION = (None, -50000000000000000000000)
+
 
 """
     Sets a random initial state
@@ -269,14 +271,16 @@ def parser(file_to_read):
 
     return mcps, tasks
 
+
 """
     The simple annealing function 
 """
 def sa(mcps):
+    global GLOBAL_OPTIMUM_SOLUTION
     swapper = [True, False]
-    T_max = 10000000
+    T_max = 10000000000
     T = T_max
-    r = 0.003
+    r = 0.00003
     laxity, _ = laxity_calculator(mcps)
     state_list = []
 
@@ -290,15 +294,14 @@ def sa(mcps):
 
         new_laxity, _ = laxity_calculator(mcps_new)
 
-        if laxity > new_laxity or random.randrange(0, T_max) < T:
+        if laxity < new_laxity or random.randrange(0, T_max) < T:
             # Set new state
             mcps = mcps_new
+            laxity = new_laxity
 
-            state_list.append(laxity)
-
-            # if is_solution(new_state):
-            #     # Insert new state into a list of valid solutions
-            #     state_list.append(new_state)
+            # Set global best solution found so far
+            if GLOBAL_OPTIMUM_SOLUTION[1] < laxity:
+                GLOBAL_OPTIMUM_SOLUTION = (mcps, laxity)
         
         T = T * (1 - r)
 
@@ -315,6 +318,8 @@ if __name__ == "__main__":
 
     print(mcps)
     print(results)
+
+    print(GLOBAL_OPTIMUM_SOLUTION)
 
 
     # parse_solution = parse_solution(mcps)
