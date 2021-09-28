@@ -114,7 +114,7 @@ def move(num_to_move, mcps):
         mcp_index, core_index, task_index, task = get_random_task(mcps);
 
         bool, _ = is_schedulable(mcps[mcp_index]['Cores'][core_index]['TaskList'], mcps[mcp_index]['Cores'][core_index]['WCETFactor'])
-        if bool:
+        if bool and not SOLUTION_FOUND:
             moves += 1
             continue
 
@@ -304,13 +304,14 @@ def sa(mcps):
 
     while T > 1:
         # Generate neighbour using either swap or move
-        change_ammount = random.randrange(5, 30)
         if SOLUTION_FOUND:
+            change_ammount = random.randrange(1, 6)
             if random.choice(switcher):
-                mcps_new = swap(1, copy.deepcopy(mcps))
+                mcps_new = swap(change_ammount, copy.deepcopy(mcps))
             else:
-                mcps_new = move(1, copy.deepcopy(mcps))
+                mcps_new = move(change_ammount, copy.deepcopy(mcps))
         else:
+            change_ammount = random.randrange(5, 20)
             mcps_new = move(change_ammount, copy.deepcopy(mcps))
 
         new_laxity, deadline = laxity_calculator(mcps_new)
@@ -343,7 +344,6 @@ if __name__ == "__main__":
     mcps, tasks = parser(FILE_TO_READ)
 
     initial_state = set_initial_state(mcps, tasks)
-
 
     results, mcps = sa(mcps)
 
