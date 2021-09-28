@@ -5,10 +5,9 @@ import xml.etree.cElementTree as ET
 import math
 import copy
 
-SOLUTION_FILE = 'large.xml'
 FILE_TO_READ = 'test_cases/large.xml'
-GLOBAL_OPTIMUM_SOLUTION = (None, -50000000000000000000000)
-MIN_TASKS_PER_CORE = 1
+SOLUTION_FILE = 'large.xml'
+GLOBAL_OPTIMUM_SOLUTION = (None, -50000000000000000000000, 0)
 SOLUTION_FOUND = False
 
 
@@ -290,7 +289,13 @@ def parser(file_to_read):
 
 
 """
-    The simple annealing function 
+    The simple annealing function
+
+    Args:
+        mcps: main list
+    
+    Returns:
+        Nothing
 """
 def sa(mcps):
     global SOLUTION_FOUND
@@ -335,9 +340,6 @@ def sa(mcps):
                     SOLUTION_FOUND = True
         
         T = T * (1 - r)
-
-    return state_list, mcps
-
 
 
 if __name__ == "__main__":
