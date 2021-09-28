@@ -6,7 +6,13 @@
     * Sets the output file and directory for the parsed solution
 
 ## Run the program
+This project uses python 3.9.6. To install all required dependencies run:
+
 `pip3 -r requirements.txt`
+
+To run the algorithm (takes a very long time for the large dataset):
+
+`python main.py`
 
 ## Future work
 ### Initial state
