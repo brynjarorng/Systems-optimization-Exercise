@@ -160,15 +160,17 @@ def swap(swap_count, mcps):
     Creates final XML file (SOLUTION)
 
     Args:
-        mcps: MPC list (main list)    
+        solution: MPC list (main list), laxity, deadline    
     
     Returns:
         xml file with solution
 """
-def parse_solution(mcps):
+def parse_solution(solution):
     root = ET.Element("Solution")
 
-    for mcp in mcps:
+    laxity = solution[1]
+
+    for mcp in solution[0]:
         for core in mcp['Cores']:
             for task in core['TaskList']:
                 WCRT = str(round(float(task['WCET']) *
@@ -176,10 +178,32 @@ def parse_solution(mcps):
 
                 ET.SubElement(
                     root, "Task", Id=task['Id'], MCP=mcp['Id'], Core=core['Id'], WCRT=WCRT)
-
+    prettify(root)
     tree = ET.ElementTree(root)
     tree.write(SOLUTION_FILE)
+    laxity_string = '<!-- Total Laxity: ' + str(laxity) + ' -->'
+    with open(SOLUTION_FILE, 'a') as file:
+        file.write(laxity_string)
 
+"""
+    Prettify the XML tree as in the case files
+    
+    Args:
+        root of Element Tree
+"""
+
+def prettify(element, indent='  '):
+    queue = [(0, element)]  # (level, element)
+    while queue:
+        level, element = queue.pop(0)
+        children = [(level + 1, child) for child in list(element)]
+        if children:
+            element.text = '\n' + indent * (level+1)  # for child open
+        if queue:
+            element.tail = '\n' + indent * queue[0][0]  # for sibling open
+        else:
+            element.tail = '\n' + indent * (level-1)  # for parent close
+        queue[0:0] = children  # prepend so children come before siblings
 
 """
     Determines whether a list of tasks is schedulable on a single processor
@@ -335,8 +359,8 @@ def sa(mcps):
                     for c in i["Cores"]:
                         l.append(is_schedulable(c['TaskList'], c["WCETFactor"])[0])
                 if all(l) is True:
-                    parse_solution(GLOBAL_OPTIMUM_SOLUTION[0])
-                    print(l)
+                    parse_solution(GLOBAL_OPTIMUM_SOLUTION)
+                    print('Solution Found and Saved')
                     SOLUTION_FOUND = True
         
         T = T * (1 - r)
@@ -347,7 +371,7 @@ if __name__ == "__main__":
 
     initial_state = set_initial_state(mcps, tasks)
 
-    results, mcps = sa(mcps)
+    sa(mcps)
 
     print(GLOBAL_OPTIMUM_SOLUTION[1])
     print(GLOBAL_OPTIMUM_SOLUTION[2])
@@ -356,4 +380,4 @@ if __name__ == "__main__":
         for c in i["Cores"]:
             print(is_schedulable(c['TaskList'], c["WCETFactor"]))
 
-    parse_solution(GLOBAL_OPTIMUM_SOLUTION[0])
+    parse_solution(GLOBAL_OPTIMUM_SOLUTION)
