@@ -4,9 +4,10 @@ import random
 import xml.etree.cElementTree as ET
 import math
 import copy
+import datetime
 
-FILE_TO_READ = 'test_cases/large.xml'
-SOLUTION_FILE = 'large.xml'
+FILE_TO_READ = 'test_cases/medium.xml'
+SOLUTION_FILE = 'medium.xml'
 GLOBAL_OPTIMUM_SOLUTION = (None, -50000000000000000000000, 0)
 SOLUTION_FOUND = False
 
@@ -325,13 +326,13 @@ def sa(mcps):
     global SOLUTION_FOUND
     global GLOBAL_OPTIMUM_SOLUTION
     switcher = [True, False]
-    T_max = 20000000000
+    T_max = 200000000000
     T = T_max
-    r = 0.0002
+    r = 0.2
     laxity, _ = laxity_calculator(mcps)
     state_list = []
 
-    while T > 1:
+    while True:
         # Generate neighbour using either swap or move
         if SOLUTION_FOUND:
             change_ammount = random.randrange(1, 6)
@@ -360,7 +361,7 @@ def sa(mcps):
                         l.append(is_schedulable(c['TaskList'], c["WCETFactor"])[0])
                 if all(l) is True:
                     parse_solution(GLOBAL_OPTIMUM_SOLUTION)
-                    print('Solution Found and Saved')
+                    print('Solution Found and Saved   ' + str(datetime.datetime.now()))
                     SOLUTION_FOUND = True
         
         T = T * (1 - r)
