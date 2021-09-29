@@ -10,7 +10,7 @@ This project uses python 3.9.6. To install all required dependencies run:
 
 `pip3 -r requirements.txt`
 
-To run the algorithm (takes a very long time for the large dataset):
+To run the algorithm:
 
 `python main.py`
 
